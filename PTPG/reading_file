@@ -1,0 +1,150 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <vector>
+
+int main() {
+    // Open the file
+    std::ifstream inputFile("C:/Users/Gucio/Desktop/Studia/.Semestr 7/PDP/TEST_3D_plik_2D_Temp_Prosty.txt");
+
+    // Check if the file is open
+    if (!inputFile.is_open()) {
+        std::cerr << "Error opening file!" << std::endl;
+        return 1;
+    }
+
+    // Variables to store extracted values
+    int symmetry = 0;
+    double length_laser = 0.0;
+    int no_layers = 0;
+
+    // Read the 3rd line and extract values
+    std::string line;
+    for (int i = 0; i < 2; ++i) {
+        if (!std::getline(inputFile, line)) {
+            std::cerr << "Error reading 3rd line!" << std::endl;
+            return 1;
+        }
+    }
+
+    if (std::getline(inputFile, line)) {
+        std::istringstream iss(line);
+        iss >> symmetry >> length_laser;
+    }
+    else {
+        std::cerr << "Error reading 3rd line!" << std::endl;
+        return 1;
+    }
+
+    // Skip one line
+    if (!std::getline(inputFile, line)) {
+        std::cerr << "Error skipping a line!" << std::endl;
+        return 1;
+    }
+
+    // Read the 5th line and extract the first value
+    if (std::getline(inputFile, line)) {
+        std::istringstream iss(line);
+        iss >> no_layers;
+    }
+    else {
+        std::cerr << "Error reading 5th line!" << std::endl;
+        return 1;
+    }
+
+    // Vector of vectors to store the matrix data
+    std::vector<std::vector<std::string>> dataMatrix;
+    
+    // Iterate through every 6 lines
+    for (int i = 0; i < no_layers; ++i) {
+        // Skip the first line
+        if (!std::getline(inputFile, line)) {
+            std::cerr << "Error skipping the first line in iteration " << i + 1 << "!" << std::endl;
+            return 1;
+        }
+
+        // Read the second line
+        if (std::getline(inputFile, line)) {
+            int no_layer;
+            double x1, y1, x2, y2;
+            std::string material;
+
+            std::istringstream iss(line);
+            iss >> no_layer >> x1 >> y1 >> x2 >> y2 >> material;
+
+            // Vector to store data for one line of a layer
+            std::vector<std::string> layerData;
+            layerData.push_back(std::to_string(no_layer));
+            layerData.push_back(std::to_string(x1));
+            layerData.push_back(std::to_string(y1));
+            layerData.push_back(std::to_string(x2));
+            layerData.push_back(std::to_string(y2));
+            layerData.push_back(material);
+
+            // Add the vector to the main matrix
+            dataMatrix.push_back(layerData);
+        }
+        else {
+            std::cerr << "Error reading the second line in iteration " << i + 1 << "!" << std::endl;
+            return 1;
+        }
+
+        // Skip the next 4 lines
+        for (int j = 0; j < 4; ++j) {
+            if (!std::getline(inputFile, line)) {
+                std::cerr << "Error skipping lines in iteration " << i + 1 << "!" << std::endl;
+                return 1;
+            }
+        }
+    }
+
+    // Skip 3 next lines
+    for (int i = 0; i < 3; ++i) {
+        if (!std::getline(inputFile, line)) {
+            std::cerr << "Error skipping lines after iterations!" << std::endl;
+            return 1;
+        }
+    }
+
+    // Read the 4th line and extract the first five values
+    double x1, y1, x2, y2, T;
+    if (std::getline(inputFile, line)) {
+        std::istringstream iss(line);
+        iss >> x1 >> y1 >> x2 >> y2 >> T;
+
+        // Vector to store data for the special case
+        std::vector<std::string> specialData;
+        specialData.push_back(std::to_string(x1));
+        specialData.push_back(std::to_string(y1));
+        specialData.push_back(std::to_string(x2));
+        specialData.push_back(std::to_string(y2));
+        specialData.push_back(std::to_string(T));
+
+        // Add the vector to the main matrix
+        dataMatrix.push_back(specialData);
+    }
+    else {
+        std::cerr << "Error reading the 4th line!" << std::endl;
+        return 1;
+    }
+
+    // Close the file
+    inputFile.close();
+
+    // Print extracted values
+    std::cout << "Symmetry: " << symmetry << std::endl;
+    std::cout << "Length Laser: " << length_laser << std::endl;
+    std::cout << "Number of Layers: " << no_layers << std::endl;
+
+    // Print the matrix data
+    std::cout << "Data Matrix:" << std::endl;
+    for (const auto& layerData : dataMatrix) {
+        for (const auto& value : layerData) {
+            std::cout << value << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    return 0;
+}
