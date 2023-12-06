@@ -7,7 +7,7 @@ class Figure():
     
     def load_data(self):
         """
-        Loads the data about the figure.
+        Loads the data about the figure itself.
         """
         data = Figure_import()
         if not data.load_data():
