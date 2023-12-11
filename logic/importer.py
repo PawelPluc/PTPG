@@ -76,6 +76,12 @@ class Figure_import():
                 # Check types for each value in the layer_values list
                 int_value = int(layer_values[0])
                 float_values = [float(val) for val in layer_values[1:5]]
+                for val in layer_values[1:5]:
+                    try:
+                        float_val = float(val)
+                        float_values.append(float_val)
+                    except (ValueError, TypeError): #error when the coordinates cannot be converted to floats
+                        raise ValueError(f"Invalid types in line {current_line + 1}. Coordinates must be floats.")
                 string_value = layer_values[5]
 
                 coordinates.append([int_value] + float_values + [string_value])
