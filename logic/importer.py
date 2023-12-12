@@ -105,7 +105,3 @@ class Figure_import():
 
         self.data['file_name'] = file_name
         
-        
-# figure_importer = Figure_import()
-# if figure_importer.load_data():
-#     print(figure_importer.data)
