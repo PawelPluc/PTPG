@@ -9,11 +9,10 @@ class Figure():
         """
         Loads the data about the figure.
         """
-        importer = Figure_import()
-        if not importer.load_data():
-            raise Exception("Data failed to load")
-        self.data = importer.get_data() # TO DO discuss with Kasia and Ola how the data will look like 
-    
+        data = Figure_import()
+        if not data.load_data():
+            raise ValueError("Data failed to load.")
+
     def create_symetry(self):
         """
         Perform all necessary calculation to create a full 3D object from the data.

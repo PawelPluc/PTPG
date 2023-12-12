@@ -21,14 +21,25 @@ class Program():
 
             if (True): # TO DO Some button for loading a figure
                 self.figure = Figure()
-                self.figure.create_figure()
-                self.figure_loaded = True
+                try:
+                    self.figure.create_figure()
+                except ValueError as error:
+                      self.error_message(error)# Call some GUI display of error message
+                else:
+                    self.figure_loaded = True
 
             if (self.figure_loaded): # TO DO if figure is loaded call plotting of a figure and display options for loading distribution data
                 pass
 
             if (True): # TO DO Closing (x) clicked (or some exit button idk)
                 self.terminate_program()
+
+    def error_message(self, error):
+        """
+        Displays a window with an error message. Maybe add some buttons for recovery options idk.
+        error - error message
+        """
+        print(f"A following error has occured:\n{error}")
         
 
     def terminate_program(self):
