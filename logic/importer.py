@@ -104,8 +104,12 @@ class Figure_import():
         print("Temperature:", self.data['temperature'])
 
         self.data['file_name'] = file_name
+<<<<<<< HEAD
         
         
 figure_importer = Figure_import()
 if figure_importer.load_data():
     print(figure_importer.data)
+=======
+        
+>>>>>>> 479324411af36c123d3db0bf6b51f2f38900e2a9
