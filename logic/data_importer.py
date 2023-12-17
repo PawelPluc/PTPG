@@ -21,12 +21,11 @@ def import_dialog(data_type = "figure"):
 class Data_import():
 
     def __init__(self):
-        self.data = {
-            'file_name': None,
-            'type': None,
-            'data': None,
-            'degrees_type': None
-        }
+        self.file_name = None
+        self.type = None
+        self.data = None
+        self.degrees_type = None
+
 
     def load_data(self):
         """
@@ -49,32 +48,35 @@ class Data_import():
         """
         Loads the temperature data checking if the input is correct and saves it to self.data.
         """
-        file_name = file_path.split("_")[-1]
-        print(file_name)
+        self.file_name = file_path.split("_")[-1]
+        print(self.file_name)
 
         # Determine type based on the file name
-        if file_name == "pote.wyn":
-            self.data['type'] = 'potential'
-        elif file_name == "temp.wyn":
-            self.data['type'] = 'temperature'
+        if self.file_name == "pote.wyn":
+            self.type = 'potential'
+        elif self.file_name == "temp.wyn":
+            self.type = 'temperature'
         else:
-            raise ValueError(f"Unsupported file type. Expected 'pote.wyn' or 'temp.wyn', but got '{file_name}'.")
+            raise ValueError(f"Unsupported file type. Expected 'pote.wyn' or 'temp.wyn', but got '{self.file_name}'.")
 
-        print("Type:", self.data['type'])
+        print("Type:", self.type)
 
         with open(file_path, 'r') as file:
             lines = file.readlines()
         
         # Reading the third value of the second line for degrees_type
         degrees_type_value = lines[1].split()[2]
-        if degrees_type_value == "T[K]":
-            self.data['degrees_type'] = "K"
-        elif degrees_type_value == "T[C]":
-            self.data['degrees_type'] = "C"
-        else:
-            raise ValueError("Temperature must be specified in Kelvins (T[K]) or Celsius (T[C]).")
-
-        print("Degrees Type:", self.data['degrees_type'])
+        if self.type == 'temperature':
+            if degrees_type_value == "T[K]":
+                self.degrees_type = "K"
+            elif degrees_type_value == "T[C]":
+                self.degrees_type = "C"
+            else:
+                raise ValueError("Temperature must be specified in Kelvins (T[K]) or Celsius (T[C]).")
+        elif self.type == 'potential':
+            self.degrees_type = "V"
+            
+        print("Degrees Type:", self.degrees_type)
         
         # Skipping the first two lines
         current_line = 2
@@ -83,7 +85,6 @@ class Data_import():
         for line in lines[2:]:
             if not line.strip():  # Check if the line is empty
                 break
-            #values = line.split()[:4]
             values = lines[current_line].split()[:4]
             if len(values) != 4:
                 raise ValueError(f"Expected 4 values, but found {len(values)} values in line {current_line + 1}")
@@ -100,9 +101,7 @@ class Data_import():
 
             current_line += 1
 
-        self.data['data'] = np.array(data, dtype=object)
-
-        self.data['file_name'] = file_name
+        self.data = np.array(data, dtype=object)
 
 
 figure_importer = Data_import()
