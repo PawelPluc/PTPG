@@ -3,21 +3,36 @@ from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 import matplotlib.pyplot as plt
 
+from logic.importer import Figure_import
+
 class FigurePlot:
 
-    def __init__(self, figure_import):
+    def __init__(self):
 
-        self.figure_import = figure_import
-        self.data = figure_import.data
+        self.figure_import = self.load_data()
 
-        self.length = self.data['laser_length']
-        self.coords = self.data['coordinates']
+        self.length = self.figure_import.laser_length
+        self.coords = self.figure_import.coordinates
+
+        # self.file_name = None
+        # self.laser_symmetry = None
+        # self.number_layers = None
+        # self.temperature = None
 
         self.positions = [(i[1],0,i[2]) for i in self.coords]
         self.sizes = [( i[3] - i[1],self.length, i[4] - i[2]) for i in self.coords]
         self.colors = ["y","b","r","purple","brown","pink"][:len(self.sizes)]
 
-    
+    def load_data(self):
+        """
+        Loads the data about the figure itself.
+        """
+        data = Figure_import()
+        if not data.load_data():
+            raise ValueError("Data failed to load.")   
+        
+        return data
+        
     def cuboid_data2( self, o, size=(1,1,1)):
         """auxilary function for plotting"""
         X = [[[0, 1, 0], [0, 0, 0], [1, 0, 0], [1, 1, 0]],

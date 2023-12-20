@@ -3,7 +3,7 @@ from tkinter import filedialog
 from tkinter.font import Font
 
 # import other necessary modules
-from logic.figure import Figure
+from GUI.plotting.figure import FigurePlot
 from logic.data_importer import Data_import
 # import GUI.plotting.figure as fig_plot 
 # from GUI.plotting import cross_section
@@ -55,9 +55,10 @@ class Program():
         self.root.mainloop()
 
     def load_figure(self):
-        self.figure = Figure()
+        
         try:
-            self.figure.create_figure()
+            self.figure = FigurePlot()
+            self.figure.plot()
         except ValueError as error:
             self.error_message(error)   # Call some GUI display of error message
         else:
