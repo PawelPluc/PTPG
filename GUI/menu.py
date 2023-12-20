@@ -1,6 +1,7 @@
 from logic.figure import Figure
 import GUI.plotting.figure as fig_plot 
 from GUI.plotting import cross_section
+from logic.data_importer import Data_import
 
 class Program():
 

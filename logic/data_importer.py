@@ -1,22 +1,5 @@
 import numpy as np
-# from ..GUI.import_dialog import import_dialog
-
-# TO BE MOVED TO GUI WHEN WE KNOW WHY IMPORT DOESN'T WORK
-from tkinter import Tk, filedialog
-
-def import_dialog(data_type = "figure"):
-    """
-    Displays an input dialog to allow the user to choose the file.
-    Should be the same for all types of data, with the only difference being suggesting different names of files by default.
-    """
-    Tk().withdraw() 
-    file_path = filedialog.askopenfilename(
-        title="Select a file",
-        filetypes=[(".wyn files", "*.wyn"), ("All files", "*.*")]
-    )
-    return file_path
-# TILL HERE
-
+from GUI.import_dialog import import_dialog
 
 class Data_import():
 
@@ -31,7 +14,7 @@ class Data_import():
         """
         Return True if loading was successful, False if not.
         """
-        file_path = import_dialog(data_type="figure")
+        file_path = import_dialog(data_type="potential")
         if not file_path:
             print("File selection cancelled.")
             return False
