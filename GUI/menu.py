@@ -4,6 +4,7 @@ from tkinter.font import Font
 
 # import other necessary modules
 from logic.figure import Figure
+from logic.data_importer import Data_import
 # import GUI.plotting.figure as fig_plot 
 # from GUI.plotting import cross_section
 
@@ -13,6 +14,8 @@ class Program():
         self.run = True
         self.figure_loaded = False
         self.figure = None
+        self.data_loaded = False
+        self.data = None
         self.root = tk.Tk()
         self.root.title("Structure Analysis")
         self.root.geometry("400x400")
@@ -28,11 +31,16 @@ class Program():
         frame = tk.Frame(self.root, bg='#333333')
         frame.pack(pady=20)
 
-        # Load button with style
+        # Load figure button with style
         load_button = tk.Button(frame, text="Load Structure", command=self.load_figure,
                                 padx=15, pady=10, font=button_font,
                                 bg='#4CAF50', fg='white', borderwidth=2, relief="raised")
         load_button.pack(pady=10)
+
+        # Make those buttons appear only after the figure is loaded i.e. self.figure_loaded == True
+
+        # Load potential button 
+
 
         # Exit button with style
         exit_button = tk.Button(frame, text="Exit", command=self.terminate_program,
@@ -45,12 +53,22 @@ class Program():
         self.root.mainloop()
 
     def load_figure(self):
-        file_path = filedialog.askopenfilename()  # Open file dialog to choose file
-        if file_path:
-            self.figure = Figure()  # Assuming Figure() can take a file path as an argument
-            self.figure.create_figure(file_path)
+        self.figure = Figure()
+        try:
+            self.figure.create_figure()
+        except ValueError as error:
+            self.error_message(error)   # Call some GUI display of error message
+        else:
             self.figure_loaded = True
-            # Call any other methods necessary to process the file
+
+    def load_distribution(self):
+        self.data = Data_import()
+        if not self.data.load_data():
+            self.error_message("Distribution data failed to load.")
+        else:
+            self.data_loaded = True
+        
+        print(self.data.data)
 
     def terminate_program(self):
         # Add any cleanup or confirmation here if necessary
@@ -58,43 +76,9 @@ class Program():
         self.run = False
         self.root.destroy()
 
-
-
-
-
-# class Program():
-
-#     def __init__(self):
-#         self.run = True
-#         self.figure_loaded = False
-#         self.figure = None
-
-#     def run_program(self):
-#         """
-#         Used by the main function to start the execution of the program and keeps the program running.
-#         """
-        
-#         print("Program loaded")
-
-#         while(self.run):
-#             # The program is running, check for inputs i.e. button clicks
-
-#             if (True): # TO DO Some button for loading a figure
-#                 self.figure = Figure()
-#                 self.figure.create_figure()
-#                 self.figure_loaded = True
-
-#             if (self.figure_loaded): # TO DO if figure is loaded call plotting of a figure and display options for loading distribution data
-#                 pass
-
-#             if (True): # TO DO Closing (x) clicked (or some exit button idk)
-#                 self.terminate_program()
-        
-
-#     def terminate_program(self):
-#         """
-#         Should display the prompt asking for closing and finish program execution if yes.
-#         """
-#         #prompt
-
-#         self.run = False
+    def error_message(self, error):
+        """
+        Displays a window with an error message. Maybe add some buttons for recovery options idk.
+        error - error message
+        """
+        print(f"A following error has occured:\n{error}")   # Replace print with some window, you can change the error message, but leave the {error} variable inside as this is the info about actual error
