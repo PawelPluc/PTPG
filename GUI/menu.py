@@ -37,7 +37,9 @@ class Program():
                                 bg='#4CAF50', fg='white', borderwidth=2, relief="raised")
         load_button.pack(pady=10)
 
-        # Make those buttons appear only after the figure is loaded i.e. self.figure_loaded == True
+        # Make those elements appear only after the figure is loaded i.e. self.figure_loaded == True
+
+        # Some space to display the plot using display_figure fun
 
         # Load potential button 
 
@@ -68,7 +70,17 @@ class Program():
         else:
             self.data_loaded = True
         
-        print(self.data.data)
+        print(self.data.data)   # Delete later, leave for now for testing
+
+    def display_figure(self):
+        """
+        Calls the necessary plotting functions to display figure or/and its crossection on the screen.
+        """
+        if not self.figure_loaded:
+            self.error_message("Trying to display the figure, but no figure was loaded!")
+        else:
+            pass
+            #Delete pass and write actual code here
 
     def terminate_program(self):
         # Add any cleanup or confirmation here if necessary
