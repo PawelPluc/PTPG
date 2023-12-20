@@ -85,8 +85,3 @@ class Data_import():
             current_line += 1
 
         self.data = np.array(data, dtype=object)
-
-
-figure_importer = Data_import()
-if figure_importer.load_data():
-    print(figure_importer.data)
