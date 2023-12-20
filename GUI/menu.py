@@ -1,8 +1,12 @@
 import tkinter as tk
 from tkinter import filedialog
 from tkinter.font import Font
-from logic.figure import Figure
+
 # import other necessary modules
+from logic.figure import Figure
+# import GUI.plotting.figure as fig_plot 
+# from GUI.plotting import cross_section
+
 
 class Program():
     def __init__(self):
@@ -50,21 +54,13 @@ class Program():
 
     def terminate_program(self):
         # Add any cleanup or confirmation here if necessary
+        print("Terminating program")
         self.run = False
         self.root.destroy()
 
-# Rest of your code
-def main():
-    app = Program()
-    app.run_program()
-
-if __name__ == "__main__":
-    main()
 
 
-# from logic.figure import Figure
-# import GUI.plotting.figure as fig_plot 
-# from GUI.plotting import cross_section
+
 
 # class Program():
 
