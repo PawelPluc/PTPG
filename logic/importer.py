@@ -38,7 +38,10 @@ class Figure_import():
             lines = file.readlines()
 
         # Extracting values from the third line
-        third_line_values = lines[2].split()
+        try:
+            third_line_values = lines[2].split()
+        except IndexError:
+            raise ValueError(f"The file does not contain figure data.")
         try:
             self.laser_symmetry = int(third_line_values[0])
         except ValueError:

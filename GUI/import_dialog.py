@@ -6,10 +6,15 @@ def import_dialog(data_type = "figure"):
     Should be the same for all types of data, with the only difference being suggesting different names of files by default.
     Return path to a file
     """
+    if data_type == "figure":
+        filetypes = [("Text files", "*.txt"), ("All files", "*.*")]
+    elif data_type == "potential":
+        filetypes=[(".wyn files", "*.wyn"), ("All files", "*.*")]
+
     Tk().withdraw() 
     file_path = filedialog.askopenfilename(
         title="Select a file",
-        filetypes=[("Text files", "*.txt"), ("All files", "*.*")]
+        filetypes=filetypes
     )
     return file_path
 
