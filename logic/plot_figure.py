@@ -7,11 +7,11 @@ class FigurePlot:
     def __init__(self, figure_import):
 
         self.figure_import = figure_import
-        self.data = figure_import.data
+        self.data = figure_import
 
-        self.length = self.data['laser_length']
-        self.coords = self.data['coordinates']
-
+        self.length = self.data.laser_length
+        self.coords = self.data.coordinates
+        
         self.positions = [(i[1],0,i[2]) for i in self.coords]
         self.sizes = [( i[3] - i[1],self.length, i[4] - i[2]) for i in self.coords]
         self.colors = ["y","b","r","purple","brown","pink"][:len(self.sizes)]
