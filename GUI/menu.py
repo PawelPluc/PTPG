@@ -55,10 +55,29 @@ class Program():
         self.root.mainloop()
 
     def load_figure(self):
+        # 1
+        point1 = [8, 7, 3]
+        point2 = [9, 6, 1]
+        point3 = [8.5, 6, 2]
         
+        # # 2x
+        # point1 = [1, 7, 3]
+        # point2 = [1, 6, 1]
+        # point3 = [1, 6, 2]
+        
+        # # 2y
+        # point1 = [7, 1, 3]
+        # point2 = [6, 1, 1]
+        # point3 = [6, 1, 2]
+        
+        # # 2z
+        # point1 = [7, 3, 1]
+        # point2 = [6, 1, 1]
+        # point3 = [6, 2, 1]
+
         try:
             self.figure = FigurePlot()
-            self.figure.plot()
+            self.figure.plot_cross_section(point1, point2, point3)
         except ValueError as error:
             self.error_message(error)   # Call some GUI display of error message
         else:
