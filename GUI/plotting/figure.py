@@ -267,9 +267,9 @@ class FigurePlot:
         # ax1.set_zlim([limit[0],limit[1]])
 
         # Set labels for axes
-        ax1.set_xlabel('x[um]')
-        ax1.set_ylabel('y[um]')
-        ax1.set_zlabel('z[um]')
+        ax1.set_xlabel('x [um]')
+        ax1.set_ylabel('y [um]')
+        ax1.set_zlabel('z [um]')
 
 
         # 2D part
