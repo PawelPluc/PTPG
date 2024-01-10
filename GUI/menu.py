@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 from tkinter.font import Font
+from matplotlib import pyplot as plt
 
 # import other necessary modules
 from GUI.plotting.figure import FigurePlot
@@ -37,11 +38,39 @@ class Program():
                                 bg='#4CAF50', fg='white', borderwidth=2, relief="raised")
         load_button.pack(pady=10)
 
+
+
         # Make those elements appear only after the figure is loaded i.e. self.figure_loaded == True
+        if self.figure_loaded:
 
-        # Some space to display the plot using display_figure fun
+            # Some space to display the plot using display_figure fun
 
-        # Load potential button 
+            # Cross section button
+            possible_crossSections = ['XY plane', 'XZ plane', 'YZ plane', 'diagonal']
+            # Drop down list to choose plane
+            plane = possible_crossSections[3]
+
+            if plane == 'diagonal':
+                # buttons for 3 points, 3 coordinates
+    
+                point1 = [3, 7, 3]
+                point2 = [4, 6, 1]
+                point3 = [3.5, 5, 2]
+
+            elif plane == 'XY plane':
+                # Button for z of the plane
+                z = 3
+            
+            elif plane == 'XZ plane':
+                # Button for y of the plane
+                y = 3
+
+            elif plane == 'YZ plane':
+                # Button for x of the plane
+                x = 3
+
+            # Some button to generate crossSection
+            # Wywołaj nim tę funckję -> self.load_crosssection(point1, point2, point3) dla niediagonalnych plaszczyzn musze pomyslec jak policzyc te 3 punkty
 
 
         # Exit button with style
@@ -55,14 +84,26 @@ class Program():
         self.root.mainloop()
 
     def load_figure(self):
-        # 1
-        point1 = [3, 7, 3]
-        point2 = [4, 6, 1]
-        point3 = [3.5, 5, 2]
+        """
+        Loads the figure and plots it on the screen.
+        """
+        try:
+            self.figure = FigurePlot()
+            self.figure.plot()
+        except ValueError as error:
+            self.error_message(error)   # Call some GUI display of error message
+        else:
+            self.figure_loaded = True
+            self.display_plot()
 
-        point1 = [0, 0, 0]
-        point2 = [0, 10, 3]
-        point3 = [5, 0, 5]
+    def load_crosssection(self, point1, point2, point3):
+        """
+        Creates crosssection and plots it on the screen.
+        """
+        # 1
+        # point1 = [3, 7, 3]
+        # point2 = [4, 6, 1]
+        # point3 = [3.5, 5, 2]
         
         # # 2x
         # point1 = [1, 7, 3]
@@ -80,12 +121,11 @@ class Program():
         # point3 = [6, 2, 1]
 
         try:
-            self.figure = FigurePlot()
             self.figure.plot_cross_section(point1, point2, point3)
         except ValueError as error:
-            self.error_message(error)   # Call some GUI display of error message
+            self.error_message(error)   
         else:
-            self.figure_loaded = True
+            self.display_plot()
 
     def load_distribution(self):
         self.data = Data_import()
@@ -96,15 +136,11 @@ class Program():
         
         print(self.data.data)   # Delete later, leave for now for testing
 
-    def display_figure(self):
+    def display_plot(self):
         """
         Calls the necessary plotting functions to display figure or/and its crossection on the screen.
         """
-        if not self.figure_loaded:
-            self.error_message("Trying to display the figure, but no figure was loaded!")
-        else:
-            pass
-            #Delete pass and write actual code here
+        plt.show()  # To be replaced by code for plotting inside our window
 
     def terminate_program(self):
         # Add any cleanup or confirmation here if necessary

@@ -74,12 +74,10 @@ class FigurePlot:
 
         # ax.add_collection3d(Poly3DCollection(poly3d, facecolors='y', linewidths=1, alpha=0.2))
 
-        # ax.set_xlim([0,10])
-        # ax.set_ylim([0,10])
-        # ax.set_zlim([0,10])
+        ax.set_xlim([0,10])
+        ax.set_ylim([0,10])
+        ax.set_zlim([0,10])
 
-
-        plt.show()
         return
 
     def plane_normal(self, p1, p2, p3):
@@ -334,5 +332,5 @@ class FigurePlot:
 
                 ax2.plot( xf, yf, color=c)
 
-        plt.show()
+        # plt.show()
         return
