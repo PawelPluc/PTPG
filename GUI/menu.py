@@ -56,9 +56,13 @@ class Program():
 
     def load_figure(self):
         # 1
-        point1 = [8, 7, 3]
-        point2 = [9, 6, 1]
-        point3 = [8.5, 6, 2]
+        point1 = [3, 7, 3]
+        point2 = [4, 6, 1]
+        point3 = [3.5, 5, 2]
+
+        point1 = [0, 0, 0]
+        point2 = [0, 10, 3]
+        point3 = [5, 0, 5]
         
         # # 2x
         # point1 = [1, 7, 3]

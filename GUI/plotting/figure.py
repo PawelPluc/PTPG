@@ -74,9 +74,10 @@ class FigurePlot:
 
         # ax.add_collection3d(Poly3DCollection(poly3d, facecolors='y', linewidths=1, alpha=0.2))
 
-        ax.set_xlim([0,10])
-        ax.set_ylim([0,10])
-        ax.set_zlim([0,10])
+        # ax.set_xlim([0,10])
+        # ax.set_ylim([0,10])
+        # ax.set_zlim([0,10])
+
 
         plt.show()
         return
@@ -261,14 +262,14 @@ class FigurePlot:
         ax1.scatter( point3[0], point3[1], point3[2], color="black", marker="x")
 
 
-        ax1.set_xlim([limit[0],limit[1]])
-        ax1.set_ylim([limit[0],limit[1]])
-        ax1.set_zlim([limit[0],limit[1]])
+        # ax1.set_xlim([limit[0],limit[1]])
+        # ax1.set_ylim([limit[0],limit[1]])
+        # ax1.set_zlim([limit[0],limit[1]])
 
         # Set labels for axes
-        ax1.set_xlabel('X')
-        ax1.set_ylabel('Y')
-        ax1.set_zlabel('Z')
+        ax1.set_xlabel('x[um]')
+        ax1.set_ylabel('y[um]')
+        ax1.set_zlabel('z[um]')
 
 
         # 2D part
