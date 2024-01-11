@@ -19,7 +19,12 @@ class Program():
         self.data = None
         self.root = tk.Tk()
         self.root.title("Structure Analysis")
+  
+        self.root.protocol("WM_DELETE_WINDOW", self.terminate_program)
+        # root.iconbitmap('logo.ico')
+        # root.minsize(1400, 700)
         self.root.geometry("400x400")
+        # root.state('zoomed')
         self.root.configure(bg='#333333')  # Dark background for the window
 
         self.setup_gui()
@@ -146,6 +151,7 @@ class Program():
         # Add any cleanup or confirmation here if necessary
         print("Terminating program")
         self.run = False
+        self.root.quit()
         self.root.destroy()
 
     def error_message(self, error):
