@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter.font import Font
 from matplotlib import pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
 # import other necessary modules
 from GUI.plotting.figure import FigurePlot
@@ -26,6 +27,7 @@ class Program():
         # self.root.geometry("400x400")
         # self.root.state('zoomed')
         self.root.configure(bg='#333333')  # Dark background for the window
+        # TO DO Experiment with sizes, zooms, colors etc. Most of the possible functions you have here in comments
 
         self.setup_gui()
 
@@ -48,33 +50,35 @@ class Program():
         # Make those elements appear only after the figure is loaded i.e. self.figure_loaded == True
         if self.figure_loaded:
 
-            # Some space to display the plot using display_figure fun
+            # TO DO Some space to display the plot using display_figure fun
+            # Musisz tu stworzyć self.plot_frame !!!! 
+            # W plot_frame pojawią się wykresy, kod już do tego zrobiłem tylko potrzeba tego self.plot_frame
 
             # Cross section button
             possible_crossSections = ['XY plane', 'XZ plane', 'YZ plane', 'diagonal']
-            # Drop down list to choose plane
+            # TO DO Drop down list to choose plane
             plane = possible_crossSections[3]
 
             if plane == 'diagonal':
-                # buttons for 3 points, 3 coordinates
+                # TO DO buttons for 3 points, 3 coordinates
     
                 point1 = [3, 7, 3]
                 point2 = [4, 6, 1]
                 point3 = [3.5, 5, 2]
 
             elif plane == 'XY plane':
-                # Button for z of the plane
+                # TO DO Button for z of the plane
                 z = 3
             
             elif plane == 'XZ plane':
-                # Button for y of the plane
+                # TO DO Button for y of the plane
                 y = 3
 
             elif plane == 'YZ plane':
-                # Button for x of the plane
+                # TO DO Button for x of the plane
                 x = 3
 
-            # Some button to generate crossSection
+            # TO DO Some button to generate crossSection
             # Wywołaj nim tę funckję -> self.load_crosssection(point1, point2, point3) dla niediagonalnych plaszczyzn musze pomyslec jak policzyc te 3 punkty
 
 
@@ -94,12 +98,12 @@ class Program():
         """
         try:
             self.figure = FigurePlot()
-            self.figure.plot()
+            fig = self.figure.plot()
         except ValueError as error:
-            self.error_message(error)   # Call some GUI display of error message
+            self.error_message(error)
         else:
             self.figure_loaded = True
-            self.display_plot()
+            self.display_plot(fig)
 
     def load_crosssection(self, point1, point2, point3):
         """
@@ -126,13 +130,18 @@ class Program():
         # point3 = [6, 2, 1]
 
         try:
-            self.figure.plot_cross_section(point1, point2, point3)
+            if not self.figure_loaded:
+                raise ValueError("Trying to display crosssection without a figure!")
+            fig = self.figure.plot_cross_section(point1, point2, point3)
         except ValueError as error:
             self.error_message(error)   
         else:
-            self.display_plot()
+            self.display_plot(fig)
 
     def load_distribution(self):
+        """
+        Calls the necessary function to load distribution data
+        """
         self.data = Data_import()
         if not self.data.load_data():
             self.error_message("Distribution data failed to load.")
@@ -141,14 +150,24 @@ class Program():
         
         print(self.data.data)   # Delete later, leave for now for testing
 
-    def display_plot(self):
+    def display_plot(self, fig):
         """
         Calls the necessary plotting functions to display figure or/and its crossection on the screen.
         """
-        plt.show()  # To be replaced by code for plotting inside our window
+        # Clean any previous plots
+        for widget in self.plot_frame.winfo_children():
+            widget.destroy()
+
+        # Plot a new plot
+        canvas = FigureCanvasTkAgg(fig, master = self.plot_frame)
+        canvas.draw()
+        canvas.get_tk_widget().place( relwidth = 0.94, relheight = 0.9, relx = 0.03, rely = 0.03)
+        # Add toolbar i.e. save buttons etc.
+        tooprimaryar = NavigationToolbar2Tk(canvas, self.plot_frame)
+        tooprimaryar.update()
 
     def terminate_program(self):
-        # Add any cleanup or confirmation here if necessary
+        # TO DO add a message if user is sure to quit
         print("Terminating program")
         self.run = False
         self.root.quit()
@@ -159,4 +178,5 @@ class Program():
         Displays a window with an error message. Maybe add some buttons for recovery options idk.
         error - error message
         """
-        print(f"A following error has occured:\n{error}")   # Replace print with some window, you can change the error message, but leave the {error} variable inside as this is the info about actual error
+        print(f"A following error has occured:\n{error}")   
+        # TO DO Add some window with error message, you can change the error message, but leave the {error} variable inside as this is the info about actual error
