@@ -21,10 +21,10 @@ class Program():
         self.root.title("Structure Analysis")
   
         self.root.protocol("WM_DELETE_WINDOW", self.terminate_program)
-        # root.iconbitmap('logo.ico')
-        # root.minsize(1400, 700)
-        self.root.geometry("400x400")
-        # root.state('zoomed')
+        # self.root.iconbitmap('logo.ico')
+        self.root.minsize(1400, 700)
+        # self.root.geometry("400x400")
+        # self.root.state('zoomed')
         self.root.configure(bg='#333333')  # Dark background for the window
 
         self.setup_gui()
