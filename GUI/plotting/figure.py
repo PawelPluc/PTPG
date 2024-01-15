@@ -74,12 +74,10 @@ class FigurePlot:
 
         # ax.add_collection3d(Poly3DCollection(poly3d, facecolors='y', linewidths=1, alpha=0.2))
 
-        # ax.set_xlim([0,10])
-        # ax.set_ylim([0,10])
-        # ax.set_zlim([0,10])
+        ax.set_xlim([0,10])
+        ax.set_ylim([0,10])
+        ax.set_zlim([0,10])
 
-
-        plt.show()
         return
 
     def plane_normal(self, p1, p2, p3):
@@ -219,13 +217,10 @@ class FigurePlot:
                                                                             limit=limit)
         
 
-        fig = plt.figure()
-        ax1 = fig.add_subplot( 1, 2, 1, projection='3d')
+        # Create the first figure and its subplot for 3D plot
+        fig1 = plt.figure()
+        ax1 = fig1.add_subplot(111, projection='3d')
         ax1.set_aspect('equal')
-
-        ax2 = fig.add_subplot( 1, 2, 2)
-        ax2.set_aspect('equal')
-
 
         pc = self.plotCubeAt( self.positions, self.sizes, colors=self.colors, alpha=0.4, edgecolor="k")
         cubes = self.plotCubeAt(self.positions, self.sizes, colors=self.colors, array=True, alpha=0.4, edgecolor="k")
@@ -273,6 +268,10 @@ class FigurePlot:
 
 
         # 2D part
+
+        fig2 = plt.figure()
+        ax2 = fig2.add_subplot(111)
+        ax2.set_aspect('equal')
 
         projected_intersections_x = {}
         projected_intersections_y = {}
