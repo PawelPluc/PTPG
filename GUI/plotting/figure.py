@@ -66,7 +66,7 @@ class FigurePlot:
     def plot(self):
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
-        ax.set_aspect('equal')
+        ax.set_aspect('auto')
 
         pc = self.plotCubeAt( self.positions, self.sizes, colors=self.colors, alpha=0.4, edgecolor="k")
         ax.add_collection3d(pc)    
@@ -78,7 +78,7 @@ class FigurePlot:
         ax.set_ylim([0,10])
         ax.set_zlim([0,10])
 
-        return
+        return fig
 
     def plane_normal(self, p1, p2, p3):
             # Calculate vectors lying on the plane
@@ -219,10 +219,10 @@ class FigurePlot:
 
         fig = plt.figure()
         ax1 = fig.add_subplot( 1, 2, 1, projection='3d')
-        ax1.set_aspect('equal')
+        # ax1.set_aspect('equal')
 
         ax2 = fig.add_subplot( 1, 2, 2)
-        ax2.set_aspect('equal')
+        # ax2.set_aspect('equal')
 
 
         pc = self.plotCubeAt( self.positions, self.sizes, colors=self.colors, alpha=0.4, edgecolor="k")
@@ -333,4 +333,4 @@ class FigurePlot:
                 ax2.plot( xf, yf, color=c)
 
         # plt.show()
-        return
+        return fig

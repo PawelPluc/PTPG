@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, messagebox, ttk
 from tkinter.font import Font
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
@@ -32,6 +32,16 @@ class Program():
         self.setup_gui()
 
     def setup_gui(self):
+
+        # Frame for controls
+        self.controls_frame = tk.Frame(self.root, padx=5, pady=5, width=200)
+        self.controls_frame.pack_propagate(False)
+        self.controls_frame.pack(side=tk.LEFT, fill=tk.Y)
+
+        # Create a frame for plots
+        self.plot_frame = tk.Frame(self.root, padx=5, pady=5, bg='#333333')
+        self.plot_frame.pack(side=tk.RIGHT, fill='both', expand=True)
+
         # Stylish font
         button_font = Font(family="Arial", size=12, weight="bold")
 
@@ -40,53 +50,24 @@ class Program():
         frame.pack(pady=20)
 
         # Load figure button with style
-        load_button = tk.Button(frame, text="Load Structure", command=self.load_figure,
+        load_button = tk.Button(self.controls_frame, text="Load Structure", command=self.load_figure,
                                 padx=15, pady=10, font=button_font,
                                 bg='#4CAF50', fg='white', borderwidth=2, relief="raised")
         load_button.pack(pady=10)
 
-
-
-        # Make those elements appear only after the figure is loaded i.e. self.figure_loaded == True
-        if self.figure_loaded:
-
-            # TO DO Some space to display the plot using display_figure fun
-            # Musisz tu stworzyć self.plot_frame !!!! 
-            # W plot_frame pojawią się wykresy, kod już do tego zrobiłem tylko potrzeba tego self.plot_frame
-
-            # Cross section button
-            possible_crossSections = ['XY plane', 'XZ plane', 'YZ plane', 'diagonal']
-            # TO DO Drop down list to choose plane
-            plane = possible_crossSections[3]
-
-            if plane == 'diagonal':
-                # TO DO buttons for 3 points, 3 coordinates
-    
-                point1 = [3, 7, 3]
-                point2 = [4, 6, 1]
-                point3 = [3.5, 5, 2]
-
-            elif plane == 'XY plane':
-                # TO DO Button for z of the plane
-                z = 3
-            
-            elif plane == 'XZ plane':
-                # TO DO Button for y of the plane
-                y = 3
-
-            elif plane == 'YZ plane':
-                # TO DO Button for x of the plane
-                x = 3
-
-            # TO DO Some button to generate crossSection
-            # Wywołaj nim tę funckję -> self.load_crosssection(point1, point2, point3) dla niediagonalnych plaszczyzn musze pomyslec jak policzyc te 3 punkty
+        self.setup_cross_section_ui()
+        # self.cross_section_ui_frame.pack_forget()
 
 
         # Exit button with style
-        exit_button = tk.Button(frame, text="Exit", command=self.terminate_program,
+        exit_button = tk.Button(self.controls_frame, text="Exit", command=self.terminate_program,
                                 padx=15, pady=10, font=button_font,
                                 bg='#f44336', fg='white', borderwidth=2, relief="raised")
         exit_button.pack(pady=10)
+
+    def update_cross_section_availability(self):
+        if self.figure_loaded:
+            self.cross_section_button.pack(pady=10)
 
     def run_program(self):
         print("Program loaded")
@@ -104,30 +85,14 @@ class Program():
         else:
             self.figure_loaded = True
             self.display_plot(fig)
+            self.cross_section_ui_frame.pack(side=tk.RIGHT, fill='both', expand=True)  # Adjust packing here
+
+
 
     def load_crosssection(self, point1, point2, point3):
         """
         Creates crosssection and plots it on the screen.
         """
-        # 1
-        # point1 = [3, 7, 3]
-        # point2 = [4, 6, 1]
-        # point3 = [3.5, 5, 2]
-        
-        # # 2x
-        # point1 = [1, 7, 3]
-        # point2 = [1, 6, 1]
-        # point3 = [1, 6, 2]
-        
-        # # 2y
-        # point1 = [7, 1, 3]
-        # point2 = [6, 1, 1]
-        # point3 = [6, 1, 2]
-        
-        # # 2z
-        # point1 = [7, 3, 1]
-        # point2 = [6, 1, 1]
-        # point3 = [6, 2, 1]
 
         try:
             if not self.figure_loaded:
@@ -162,16 +127,103 @@ class Program():
         canvas = FigureCanvasTkAgg(fig, master = self.plot_frame)
         canvas.draw()
         canvas.get_tk_widget().place( relwidth = 0.94, relheight = 0.9, relx = 0.03, rely = 0.03)
+        # canvas.get_tk_widget().pack(fill='both', expand=True)
         # Add toolbar i.e. save buttons etc.
         tooprimaryar = NavigationToolbar2Tk(canvas, self.plot_frame)
         tooprimaryar.update()
 
+    def setup_cross_section_ui(self):
+        self.cross_section_ui_frame = tk.Frame(self.controls_frame)
+
+        self.plane_var = tk.StringVar(value='XY plane')
+        possible_crossSections = ['XY plane', 'XZ plane', 'YZ plane', 'diagonal']
+
+        for plane in possible_crossSections:
+            radio_button = tk.Radiobutton(self.cross_section_ui_frame, text=plane, variable=self.plane_var, 
+                                          value=plane, command=self.on_plane_selected)
+            radio_button.pack(anchor=tk.W)
+
+        # Coordinate input frames
+        self.coord_frames = {}
+        for plane in possible_crossSections:
+            frame = tk.Frame(self.cross_section_ui_frame)
+            self.coord_frames[plane] = frame
+            if plane == 'XY plane':
+                tk.Label(frame, text="Z coordinate:").pack(side=tk.LEFT)
+                tk.Entry(frame).pack(side=tk.LEFT)
+            elif plane == 'XZ plane':
+                tk.Label(frame, text="Y coordinate:").pack(side=tk.LEFT)
+                tk.Entry(frame).pack(side=tk.LEFT)
+            elif plane == 'YZ plane':
+                tk.Label(frame, text="X coordinate:").pack(side=tk.LEFT)
+                tk.Entry(frame).pack(side=tk.LEFT)
+            elif plane == 'diagonal':
+                for i in range(3):
+                    tk.Label(frame, text=f"Point {i+1} (x, y, z):").pack()
+                    tk.Entry(frame).pack()  # X
+                    tk.Entry(frame).pack()  # Y
+                    tk.Entry(frame).pack()  # Z
+
+        # Confirm button
+        self.cross_section_button = tk.Button(self.cross_section_ui_frame, text="Confirm Cross Section", 
+                                              command=self.confirm_cross_section)
+        self.cross_section_button.pack()
+
+        # Initially call on_plane_selected to set up the correct UI
+        self.on_plane_selected()
+
+    def on_plane_selected(self):
+        # Hide all frames
+        for frame in self.coord_frames.values():
+            frame.pack_forget()
+
+        # Show the relevant frame
+        selected_plane = self.plane_var.get()
+        self.coord_frames[selected_plane].pack()
+
+    def confirm_cross_section(self):
+        selected_plane = self.plane_var.get()
+        points = []
+
+        if selected_plane == 'diagonal':
+            # Extract three points for the diagonal plane
+            entries = self.coord_frames[selected_plane].winfo_children()
+            for i in range(0, len(entries), 4):  # Assuming each point has 3 entries (x, y, z) and one label
+                point = [float(entries[i + 1].get()),  # x
+                        float(entries[i + 2].get()),  # y
+                        float(entries[i + 3].get())]  # z
+                points.append(point)
+                print(points)
+        else:
+            # For XY, XZ, YZ planes, create points based on the single coordinate
+            coord_value = float(self.coord_frames[selected_plane].winfo_children()[1].get())
+            if selected_plane == 'XY plane':
+                # Create points for XY plane at given Z
+                z = coord_value
+                points = [[0, 0, z], [1, 0, z], [0, 1, z]]
+            elif selected_plane == 'XZ plane':
+                # Create points for XZ plane at given Y
+                y = coord_value
+                points = [[0, y, 0], [1, y, 0], [0, y, 1]]
+            elif selected_plane == 'YZ plane':
+                # Create points for YZ plane at given X
+                x = coord_value
+                points = [[x, 0, 0], [x, 1, 0], [x, 0, 1]]
+
+        # Now use these points in your load_crosssection function
+        try:
+            self.load_crosssection(*points)
+        except ValueError as error:
+            self.error_message(str(error))
+
     def terminate_program(self):
-        # TO DO add a message if user is sure to quit
-        print("Terminating program")
-        self.run = False
-        self.root.quit()
-        self.root.destroy()
+        response = messagebox.askyesno("Exit", "Are you sure you want to exit?")
+        if response:
+            print("Terminating program")
+            self.root.quit()
+            self.root.destroy()
+        else:
+            print("Exit canceled")
 
     def error_message(self, error):
         """
