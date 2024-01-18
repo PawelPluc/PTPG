@@ -210,11 +210,38 @@ class Program():
                 x = coord_value
                 points = [[x, 0, 0], [x, 1, 0], [x, 0, 1]]
 
+
         # Now use these points in your load_crosssection function
         try:
+            # Check for colinearity
+            if self.collinear(points):
+                raise ValueError("Choosen points are coolinear, the plane cannot be determined.")
+            
             self.load_crosssection(*points)
         except Exception as error:
             self.error_message(str(error))
+
+    def collinear(self, points):
+        """
+        Checks if given 3 3d points are coolinear.
+        Return True if yes, False otherwise.
+        """
+        p1, p2, p3 = points
+        x1, y1, z1 = p1
+        x2, y2, z2 = p2
+        x3, y3, z3 = p3
+        vector1 = ((x2 - x1), (y2 - y1), (z2 - z1))
+        vector2 = ((x3 - x1), (y3 - y1), (z3 - z1))
+
+        # Calculate cross product
+        cross_product = (
+            vector1[1] * vector2[2] - vector1[2] * vector2[1],
+            vector1[2] * vector2[0] - vector1[0] * vector2[2],
+            vector1[0] * vector2[1] - vector1[1] * vector2[0]
+        )
+
+        # Check if the cross product is zero (collinear points)
+        return all(coord == 0 for coord in cross_product)
 
     def terminate_program(self):
         response = messagebox.askyesno("Exit", "Are you sure you want to exit?")
