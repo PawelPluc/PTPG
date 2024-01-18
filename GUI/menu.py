@@ -80,7 +80,7 @@ class Program():
         try:
             self.figure = FigurePlot()
             fig = self.figure.plot()
-        except ValueError as error:
+        except Exception as error:
             self.error_message(error)
         else:
             self.figure_loaded = True
@@ -98,7 +98,7 @@ class Program():
             if not self.figure_loaded:
                 raise ValueError("Trying to display crosssection without a figure!")
             fig = self.figure.plot_cross_section(point1, point2, point3)
-        except ValueError as error:
+        except Exception as error:
             self.error_message(error)   
         else:
             self.display_plot(fig)
@@ -213,7 +213,7 @@ class Program():
         # Now use these points in your load_crosssection function
         try:
             self.load_crosssection(*points)
-        except ValueError as error:
+        except Exception as error:
             self.error_message(str(error))
 
     def terminate_program(self):
