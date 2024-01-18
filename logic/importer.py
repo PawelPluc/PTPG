@@ -47,6 +47,10 @@ class Figure_import():
             self.laser_symmetry = int(third_line_values[0])
         except ValueError:
             raise ValueError(f"Laser symmetry needs to be an integer value, but '{third_line_values[0]}' is not an int.")
+        
+        if self.laser_symmetry != 1 and self.laser_symmetry != 0:
+            raise ValueError(f"Laser symmetry needs to be equal to 0 or 1, but is equal to '{third_line_values[0]}'.")
+        
         print("Symmetry:", self.laser_symmetry)
  
         try:
