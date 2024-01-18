@@ -331,6 +331,8 @@ class FigurePlot:
 
 
                 ax2.plot( xf, yf, color=c)
+                ax2.set_xlabel('x [um]')
+                ax2.set_ylabel('y [um]')
 
         # plt.show()
         return fig
