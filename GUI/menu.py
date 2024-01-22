@@ -81,7 +81,7 @@ class Program():
             self.figure = FigurePlot()
             fig = self.figure.plot()
         except Exception as error:
-            self.error_message("Input data failed to load for the following reason:\n"+error)
+            self.error_message("Input data failed to load for the following reason:\n"+str(error))
         else:
             self.figure_loaded = True
             self.display_plot(fig)
@@ -99,7 +99,7 @@ class Program():
                 raise ValueError("Trying to display crosssection without a figure!")
             fig = self.figure.plot_cross_section(point1, point2, point3)
         except Exception as error:
-            self.error_message("Crosssection couldn't be created for the reason below:\n"+error)   
+            self.error_message("Crosssection couldn't be created for the reason below:\n"+str(error))   
         else:
             self.display_plot(fig)
 
