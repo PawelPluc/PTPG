@@ -138,6 +138,10 @@ class FigurePlot:
             cc = self.plotCircleAt(self.positions, self.sizes, colors=self.colors, alpha=0.4, edgecolor="k")
             ax.add_collection3d(cc)
 
+        if self.figure_import.laser_symmetry:
+            cc = self.plotCircleAt(self.positions, self.sizes, colors=self.colors, alpha=0.4, edgecolor="k")
+            ax.add_collection3d(cc)
+
         pc = self.plotCubeAt( self.positions, self.sizes, colors=self.colors, alpha=0.4, edgecolor="k")
         ax.add_collection3d(pc)    
 
@@ -149,9 +153,7 @@ class FigurePlot:
         ax.set_ylim([ self.min_lim[1]-1, self.max_lim[1]+1])
         ax.set_zlim([ self.min_lim[2]-1, self.max_lim[2]+1])
 
-
-        plt.show()
-        return
+        return fig
 
     def plane_normal(self, p1, p2, p3):
             # Calculate vectors lying on the plane
@@ -292,10 +294,10 @@ class FigurePlot:
 
         fig = plt.figure()
         ax1 = fig.add_subplot( 1, 2, 1, projection='3d')
-        ax1.set_aspect('equal')
+        # ax1.set_aspect('equal')
 
         ax2 = fig.add_subplot( 1, 2, 2)
-        ax2.set_aspect('equal')
+        # ax2.set_aspect('equal')
 
 
         if self.figure_import.laser_symmetry:
@@ -410,5 +412,5 @@ class FigurePlot:
 
                 ax2.plot( xf, yf, color=c)
 
-        plt.show()
-        return
+        # plt.show()
+        return fig
