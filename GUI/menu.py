@@ -133,6 +133,8 @@ class Program():
         tooprimaryar.update()
 
     def setup_cross_section_ui(self):
+        laser_symmetry = self.figure.laser_symmetry
+
         self.cross_section_ui_frame = tk.Frame(self.controls_frame)
 
         self.plane_var = tk.StringVar(value='XY plane')

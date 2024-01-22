@@ -20,7 +20,7 @@ class FigurePlot:
         self.coords = self.figure_import.coordinates
 
         # self.file_name = None
-        # self.laser_symmetry = None
+        self.laser_symmetry = self.figure_import.laser_symmetry
         # self.number_layers = None
         # self.temperature = None
 
