@@ -20,7 +20,7 @@ class FigurePlot:
         self.coords = self.figure_import.coordinates
 
         # self.file_name = None
-        # self.laser_symmetry = None
+        self.laser_symmetry = self.figure_import.laser_symmetry
         # self.number_layers = None
         # self.temperature = None
 
@@ -132,7 +132,15 @@ class FigurePlot:
     def plot(self):
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
-        ax.set_aspect('auto')
+        ax.set_aspect('equal')
+
+        if self.figure_import.laser_symmetry:
+            cc = self.plotCircleAt(self.positions, self.sizes, colors=self.colors, alpha=0.4, edgecolor="k")
+            ax.add_collection3d(cc)
+
+        if self.figure_import.laser_symmetry:
+            cc = self.plotCircleAt(self.positions, self.sizes, colors=self.colors, alpha=0.4, edgecolor="k")
+            ax.add_collection3d(cc)
 
         if self.figure_import.laser_symmetry:
             cc = self.plotCircleAt(self.positions, self.sizes, colors=self.colors, alpha=0.4, edgecolor="k")
