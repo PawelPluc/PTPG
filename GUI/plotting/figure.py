@@ -1,9 +1,14 @@
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+import matplotlib
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
+# new imports
+import math
 from logic.importer import Figure_import
+
 
 class FigurePlot:
 
@@ -22,6 +27,15 @@ class FigurePlot:
         self.positions = [(i[1],0,i[2]) for i in self.coords]
         self.sizes = [( i[3] - i[1],self.length, i[4] - i[2]) for i in self.coords]
         self.colors = ["y","b","r","purple","brown","pink"][:len(self.sizes)]
+
+        self.coords_table = np.array( [(i+a, j+b, k+c) for (i,j,k), (a,b,c) in zip( self.sizes, self.positions)])
+        if self.figure_import.laser_symmetry:
+            self.min_lim = -self.coords_table.max(axis=0)
+            self.min_lim[2] = 0
+        else:
+            self.min_lim = np.array(self.positions).min(axis=0)
+
+        self.max_lim = self.coords_table.max(axis=0)
 
     def load_data(self):
         """
@@ -47,6 +61,31 @@ class FigurePlot:
             X += np.array(o)
             return X
     
+    def PointsInCircum(self, r,n=50):
+        pi = math.pi
+        return [(math.cos(2*pi/n*x)*r,math.sin(2*pi/n*x)*r) for x in range(0,n+1)]
+    
+    def cyllindrical_data( self, o, size=(1,1,1)):
+            """auxilary function for cyllindrical plotting"""
+
+            circp = self.PointsInCircum( r=size[0])
+
+            X = []
+
+            for i in range(len(circp)-1):
+                X.append([[circp[i][0], circp[i][1], 0],
+                          [circp[i+1][0], circp[i+1][1], 0],
+                          [circp[i+1][0], circp[i+1][1], size[2]],
+                          [circp[i][0], circp[i][1], size[2]]])
+                
+            # X.append([[i,j,0] for i,j in circp])
+            # X.append([[i,j,size[2]] for i,j in circp])
+                
+            X = np.array(X).astype(float)
+
+            X += np.array(o)
+            return X
+    
 
     def plotCubeAt(self, positions,sizes=None,colors=None,array=False, **kwargs):
         """auxilary function for plotting"""
@@ -54,13 +93,40 @@ class FigurePlot:
         if not isinstance(sizes,(list,np.ndarray)): sizes=[(1,1,1)]*len(positions)
         g = []
         for p,s,c in zip(positions,sizes,colors):
-            g.append( self.cuboid_data(p, size=s) )
+            if self.figure_import.laser_symmetry:
+                g.append( self.cyllindrical_data(p, size=s) )
+            else:
+                g.append( self.cuboid_data(p, size=s) )
 
         if array:
             return g
         else:
+            if self.figure_import.laser_symmetry:
+                rep = 50
+            else:
+                rep = 6
+
             return Poly3DCollection(np.concatenate(g),  
-                                    facecolors=np.repeat(colors,6), **kwargs)
+                                    facecolors=np.repeat(colors,rep), **kwargs)
+        
+
+    def plotCircleAt(self, positions,sizes=None,colors=None,array=False, **kwargs):
+        """auxilary function for plotting"""
+        if not isinstance(colors,(list,np.ndarray)): colors=["C0"]*len(positions)
+        if not isinstance(sizes,(list,np.ndarray)): sizes=[(1,1,1)]*len(positions)
+        g = []
+        for p,s,c in zip(positions,sizes,colors):
+            X = []
+            circp = self.PointsInCircum( r=s[0])
+            X.append([[i,j,0] for i,j in circp])
+            X.append([[i,j,s[2]] for i,j in circp])
+
+            X = np.array(X).astype(float)
+            X += np.array(p)
+            g.append(X)
+
+        return Poly3DCollection(np.concatenate(g),  
+                                    facecolors=np.repeat(colors,2), **kwargs)
 
 
     def plot(self):
@@ -68,15 +134,24 @@ class FigurePlot:
         ax = fig.add_subplot(111, projection='3d')
         ax.set_aspect('auto')
 
+        if self.figure_import.laser_symmetry:
+            cc = self.plotCircleAt(self.positions, self.sizes, colors=self.colors, alpha=0.4, edgecolor="k")
+            ax.add_collection3d(cc)
+
+        if self.figure_import.laser_symmetry:
+            cc = self.plotCircleAt(self.positions, self.sizes, colors=self.colors, alpha=0.4, edgecolor="k")
+            ax.add_collection3d(cc)
+
         pc = self.plotCubeAt( self.positions, self.sizes, colors=self.colors, alpha=0.4, edgecolor="k")
         ax.add_collection3d(pc)    
+
         ax.grid(False)
 
         # ax.add_collection3d(Poly3DCollection(poly3d, facecolors='y', linewidths=1, alpha=0.2))
 
-        ax.set_xlim([0,10])
-        ax.set_ylim([0,10])
-        ax.set_zlim([0,10])
+        ax.set_xlim([ self.min_lim[0]-1, self.max_lim[0]+1])
+        ax.set_ylim([ self.min_lim[1]-1, self.max_lim[1]+1])
+        ax.set_zlim([ self.min_lim[2]-1, self.max_lim[2]+1])
 
         return fig
 
@@ -225,9 +300,14 @@ class FigurePlot:
         # ax2.set_aspect('equal')
 
 
+        if self.figure_import.laser_symmetry:
+            cc = self.plotCircleAt(self.positions, self.sizes, colors=self.colors, alpha=0.4, edgecolor="k")
+            ax1.add_collection3d(cc)
+            
         pc = self.plotCubeAt( self.positions, self.sizes, colors=self.colors, alpha=0.4, edgecolor="k")
         cubes = self.plotCubeAt(self.positions, self.sizes, colors=self.colors, array=True, alpha=0.4, edgecolor="k")
         ax1.add_collection3d(pc)
+
         ax1.grid(False)
 
         ax1.plot_surface(xx, yy, z, alpha=0.2)
@@ -260,9 +340,9 @@ class FigurePlot:
         ax1.scatter( point3[0], point3[1], point3[2], color="black", marker="x")
 
 
-        # ax1.set_xlim([limit[0],limit[1]])
-        # ax1.set_ylim([limit[0],limit[1]])
-        # ax1.set_zlim([limit[0],limit[1]])
+        ax1.set_xlim([ self.min_lim[0]-1, self.max_lim[0]+1])
+        ax1.set_ylim([ self.min_lim[1]-1, self.max_lim[1]+1])
+        ax1.set_zlim([ self.min_lim[2]-1, self.max_lim[2]+1])
 
         # Set labels for axes
         ax1.set_xlabel('x [um]')
@@ -313,9 +393,9 @@ class FigurePlot:
 
             if len( projected_intersections_x[cube]) > 2:
 
-                ax2.scatter( projected_intersections_x[cube],
-                            projected_intersections_y[cube],
-                            color=c)
+                # ax2.scatter( projected_intersections_x[cube],
+                #             projected_intersections_y[cube],
+                #             color=c)
                 
 
                 xf = projected_intersections_x[cube]
