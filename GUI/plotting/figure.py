@@ -4,6 +4,7 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
+from scipy.interpolate import griddata
 
 # new imports
 import math
@@ -284,7 +285,7 @@ class FigurePlot:
         return np.arctan2(y, x)
     
 
-    def plot_cross_section(self, point1, point2, point3, projection=0, limit=(0,10), flip_v=0, flip_h=0, rotate=0):
+    def plot_cross_section(self, point1, point2, point3, dist=[], projection=0, limit=(0,10), flip_v=0, flip_h=0, rotate=0):
 
         xx, yy, z, plane_point, normal, orientation = self.calculate_plane( point1=point1,
                                                                             point2=point2,
@@ -409,8 +410,28 @@ class FigurePlot:
                 xf = [p[0] for p in pf]
                 yf = [p[1] for p in pf]
 
-
+                ax2.plot( xf, yf, color="#FFFFFF", lw=4)
                 ax2.plot( xf, yf, color=c)
+        
+        if len(dist):
+            # Sample irregular data (replace this with your actual data)
+            x_coordinates = dist[:,2]
+            y_coordinates = dist[:,3]
+            temperatures = dist[:,1]  # Replace this with your actual temperature data
+
+            # Create a regular grid
+            x_grid, y_grid = np.meshgrid(np.linspace(min(x_coordinates), max(x_coordinates), 1000),
+                                        np.linspace(min(y_coordinates), max(y_coordinates), 1000))
+
+            # Interpolate temperature values on the regular grid
+            temperature_grid = griddata((x_coordinates, y_coordinates), temperatures, (x_grid, y_grid), method='linear')
+
+            # Create a heatmap using pcolormesh
+            plt.pcolormesh(x_grid, y_grid, temperature_grid, cmap='hot', shading='auto')
+
+            # Add colorbar for reference
+            cbar = plt.colorbar()
+            cbar.set_label('Temperature [K]')
 
         # plt.show()
         return fig
