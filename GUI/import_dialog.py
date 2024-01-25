@@ -7,7 +7,7 @@ def import_dialog(data_type = "figure"):
     Return path to a file
     """
     if data_type == "figure":
-        filetypes = [("Dan files", "*.dan"), ("All files", "*.*")]
+        filetypes = [(".dan files", "*.dan"), ("All files", "*.*")]
     elif data_type == "potential":
         filetypes=[(".wyn files", "*.wyn"), ("All files", "*.*")]
 
