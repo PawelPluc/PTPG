@@ -71,6 +71,9 @@ class Program():
         self.cross_section_ui_frame = tk.Frame(self.controls_frame)  # Create the frame
         self.cross_section_ui_frame.pack()  # Pack the frame, but it will be empty initially
 
+        self.load_distribution_button = tk.Button(self.controls_frame, text="Load Distribution Data", command=self.load_distribution)
+
+
     def update_cross_section_availability(self):
         if self.figure_loaded:
             self.cross_section_button.pack(pady=10)
@@ -94,6 +97,12 @@ class Program():
             self.clear_and_setup_cross_section_ui()
             self.setup_cross_section_ui()
             self.display_plot(fig)
+            # Hide the load distribution button as new structure is loaded
+            self.load_distribution_button.pack_forget()
+
+            # Reset data and unit
+            self.data = []
+            self.data_unit = 'V'
             # self.cross_section_ui_frame.pack(side=tk.RIGHT, fill='both', expand=True)  # Adjust packing here
 
 
@@ -105,11 +114,14 @@ class Program():
         try:
             if not self.figure_loaded:
                 raise ValueError("Trying to display crosssection without a figure!")
-            fig = self.figure.plot_cross_section(point1, point2, point3, dist=self.data, unit=self.data_unit)
+            self.data = []
+            self.data_unit = 'V'
+            self.current_cross_section_points = (point1, point2, point3)  # Store the current points
+            self.reload_cross_section_with_distribution()
+            self.load_distribution_button.pack_forget()
+            self.load_distribution_button.pack(pady=10)
         except Exception as error:
             self.error_message("Crosssection couldn't be created for the reason below:\n"+str(error))   
-        else:
-            self.display_plot(fig)
 
     def load_distribution(self):
         """
@@ -126,10 +138,16 @@ class Program():
                 self.data_unit = "K"
             else:
                 self.dat_unit = "V"
+            self.reload_cross_section_with_distribution()
             
-
-        
-        print(self.data.data)   # Delete later, leave for now for testing
+    def reload_cross_section_with_distribution(self):
+        """
+        Redraws the cross section plot with the distribution data.
+        """
+        if self.figure_loaded and self.current_cross_section_points:
+            point1, point2, point3 = self.current_cross_section_points
+            fig = self.figure.plot_cross_section(point1, point2, point3, dist=self.data, unit=self.data_unit)
+            self.display_plot(fig)
 
     def display_plot(self, fig):
         """
