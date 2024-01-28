@@ -3,6 +3,7 @@ from tkinter import filedialog, messagebox, ttk
 from tkinter.font import Font
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+import math
 
 # import other necessary modules
 from GUI.plotting.figure import FigurePlot
@@ -17,9 +18,11 @@ class Program():
         self.figure_loaded = False
         self.figure = None
         self.data_loaded = False
-        self.data = None
+        self.data = []
+        self.data_unit = 'V'
         self.root = tk.Tk()
         self.root.title("Structure Analysis")
+        self.cross_section_ui_frame = None
   
         self.root.protocol("WM_DELETE_WINDOW", self.terminate_program)
         # self.root.iconbitmap('logo.ico')
@@ -55,7 +58,7 @@ class Program():
                                 bg='#4CAF50', fg='white', borderwidth=2, relief="raised")
         load_button.pack(pady=10)
 
-        self.setup_cross_section_ui()
+        # self.setup_cross_section_ui()
         # self.cross_section_ui_frame.pack_forget()
 
 
@@ -64,6 +67,12 @@ class Program():
                                 padx=15, pady=10, font=button_font,
                                 bg='#f44336', fg='white', borderwidth=2, relief="raised")
         exit_button.pack(pady=10)
+
+        self.cross_section_ui_frame = tk.Frame(self.controls_frame)  # Create the frame
+        self.cross_section_ui_frame.pack()  # Pack the frame, but it will be empty initially
+
+        self.load_distribution_button = tk.Button(self.controls_frame, text="Load Distribution Data", command=self.load_distribution)
+
 
     def update_cross_section_availability(self):
         if self.figure_loaded:
@@ -84,8 +93,17 @@ class Program():
             self.error_message("Input data failed to load for the following reason:\n"+str(error))
         else:
             self.figure_loaded = True
+            self.figure_symmetry = self.figure.laser_symmetry
+            self.clear_and_setup_cross_section_ui()
+            self.setup_cross_section_ui()
             self.display_plot(fig)
-            self.cross_section_ui_frame.pack(side=tk.RIGHT, fill='both', expand=True)  # Adjust packing here
+            # Hide the load distribution button as new structure is loaded
+            self.load_distribution_button.pack_forget()
+
+            # Reset data and unit
+            self.data = []
+            self.data_unit = 'V'
+            # self.cross_section_ui_frame.pack(side=tk.RIGHT, fill='both', expand=True)  # Adjust packing here
 
 
 
@@ -93,27 +111,43 @@ class Program():
         """
         Creates crosssection and plots it on the screen.
         """
-
         try:
             if not self.figure_loaded:
                 raise ValueError("Trying to display crosssection without a figure!")
-            fig = self.figure.plot_cross_section(point1, point2, point3)
+            self.data = []
+            self.data_unit = 'V'
+            self.current_cross_section_points = (point1, point2, point3)  # Store the current points
+            self.reload_cross_section_with_distribution()
+            self.load_distribution_button.pack_forget()
+            self.load_distribution_button.pack(pady=10)
         except Exception as error:
             self.error_message("Crosssection couldn't be created for the reason below:\n"+str(error))   
-        else:
-            self.display_plot(fig)
 
     def load_distribution(self):
         """
         Calls the necessary function to load distribution data
         """
-        self.data = Data_import()
-        if not self.data.load_data():
+        dist = Data_import()
+        if not dist.load_data():
             self.error_message("Distribution data failed to load.")
         else:
             self.data_loaded = True
-        
-        print(self.data.data)   # Delete later, leave for now for testing
+            self.data = dist.data
+
+            if dist.type == 'temperature':
+                self.data_unit = "K"
+            else:
+                self.dat_unit = "V"
+            self.reload_cross_section_with_distribution()
+            
+    def reload_cross_section_with_distribution(self):
+        """
+        Redraws the cross section plot with the distribution data.
+        """
+        if self.figure_loaded and self.current_cross_section_points:
+            point1, point2, point3 = self.current_cross_section_points
+            fig = self.figure.plot_cross_section(point1, point2, point3, dist=self.data, unit=self.data_unit)
+            self.display_plot(fig)
 
     def display_plot(self, fig):
         """
@@ -133,7 +167,32 @@ class Program():
         tooprimaryar.update()
 
     def setup_cross_section_ui(self):
+        if self.cross_section_ui_frame is not None:
+            for widget in self.cross_section_ui_frame.winfo_children():
+                widget.destroy()
+        else:
+            # If the frame doesn't exist, create it
+            self.cross_section_ui_frame = tk.Frame(self.controls_frame)
+            self.cross_section_ui_frame.pack()
+
+        # Setup the UI based on the symmetry
+        if self.figure_symmetry == 0:  # Cartesian coordinates
+            self.setup_cartesian_cross_section_ui()
+        elif self.figure_symmetry == 1:  # Cylindrical coordinates
+            self.setup_cylindrical_cross_section_ui()
+
+        self.cross_section_ui_frame.pack()
+
+    def setup_cartesian_cross_section_ui(self):
+        # laser_symmetry = self.figure.laser_symmetry
+
         self.cross_section_ui_frame = tk.Frame(self.controls_frame)
+
+        self.cross_section_button = tk.Button(self.cross_section_ui_frame, text="Confirm Cross Section", 
+                                              command=self.confirm_cross_section)
+        
+        cross_section_label = tk.Label(self.cross_section_ui_frame, text="Select the type of cross section:")
+        cross_section_label.pack(pady=5)  # Added some padding for visual spacing
 
         self.plane_var = tk.StringVar(value='XY plane')
         possible_crossSections = ['XY plane', 'XZ plane', 'YZ plane', 'diagonal']
@@ -164,13 +223,51 @@ class Program():
                     tk.Entry(frame).pack()  # Y
                     tk.Entry(frame).pack()  # Z
 
-        # Confirm button
-        self.cross_section_button = tk.Button(self.cross_section_ui_frame, text="Confirm Cross Section", 
-                                              command=self.confirm_cross_section)
-        self.cross_section_button.pack()
-
         # Initially call on_plane_selected to set up the correct UI
         self.on_plane_selected()
+
+        # Confirm button
+        self.cross_section_button.pack()
+
+    def setup_cylindrical_cross_section_ui(self):
+        # Setup for cylindrical coordinates
+        angle_label = tk.Label(self.cross_section_ui_frame, text="Angle:")
+        angle_label.pack()
+        self.angle_entry = tk.Entry(self.cross_section_ui_frame)
+        self.angle_entry.pack()
+
+        distance_label = tk.Label(self.cross_section_ui_frame, text="Distance of the intersection point from the axis:", wraplength=200)
+        distance_label.pack()
+        self.distance_entry = tk.Entry(self.cross_section_ui_frame)
+        self.distance_entry.pack()
+
+        height_label = tk.Label(self.cross_section_ui_frame, text="Height of the intersection point:", wraplength=200)
+        height_label.pack()
+        self.height_entry = tk.Entry(self.cross_section_ui_frame)
+        self.height_entry.pack()
+
+        confirm_button = tk.Button(self.cross_section_ui_frame, text="Confirm Cross Section", command=self.confirm_cylindrical_cross_section)
+        confirm_button.pack()
+
+    def confirm_cylindrical_cross_section(self):
+        try:
+            # Retrieve user inputs
+            angle = float(self.angle_entry.get())  # Angle in degrees
+            radius = float(self.distance_entry.get())  # Distance to Z-axis
+            height = float(self.height_entry.get())  # Height (Z coordinate)
+
+            # Calculate three points on the cross section
+            points = self.get_cross_section_points(radius, angle, height)
+
+            # Use these points in your load_crosssection function
+            # Check for colinearity
+            if self.collinear(points):
+                raise ValueError("Chosen points are collinear, the plane cannot be determined.")
+
+            self.load_crosssection(*points)
+        except Exception as error:
+            self.error_message(str(error))
+
 
     def on_plane_selected(self):
         # Hide all frames
@@ -180,6 +277,19 @@ class Program():
         # Show the relevant frame
         selected_plane = self.plane_var.get()
         self.coord_frames[selected_plane].pack()
+
+        # Repack the confirm button to ensure it is always at the bottom
+        self.cross_section_button.pack_forget()  # Remove the button from its current location
+        self.cross_section_button.pack(pady=10)  # Repack it to make sure it is at the bottom
+
+    def clear_and_setup_cross_section_ui(self):
+        if self.cross_section_ui_frame is not None:
+            self.cross_section_ui_frame.destroy()  # Destroy the entire frame
+
+        self.cross_section_ui_frame = tk.Frame(self.controls_frame)  # Recreate the frame
+        self.cross_section_ui_frame.pack(pady=10)  # Pack the frame in the desired location
+
+        self.setup_cross_section_ui()
 
     def confirm_cross_section(self):
         selected_plane = self.plane_var.get()
@@ -243,6 +353,14 @@ class Program():
         # Check if the cross product is zero (collinear points)
         return all(coord == 0 for coord in cross_product)
 
+    def get_cross_section_points(self, r, theta, z, delta=2):
+        # Three points at theta, theta + delta, and theta - delta
+        theta = math.radians(theta)
+        point1 = (r, 0, z)
+        point2 = (r, r, z)
+        point3 = (r + delta*math.cos(theta), 0, z - delta*math.sin(theta))
+        return point1, point2, point3
+
     def terminate_program(self):
         response = messagebox.askyesno("Exit", "Are you sure you want to exit?")
         if response:
@@ -253,9 +371,4 @@ class Program():
             print("Exit canceled")
 
     def error_message(self, error):
-        """
-        Displays a window with an error message. Maybe add some buttons for recovery options idk.
-        error - error message
-        """
-        print(f"A following error has occured:\n{error}")   
-        # TO DO Add some window with error message, you can change the error message, but leave the {error} variable inside as this is the info about actual error
+        messagebox.showerror("Error", f"A following error has occured:\n{error}")

@@ -52,7 +52,7 @@ class FigurePlot:
     def plot(self, limit=(0,10)):
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
-        ax.set_aspect('equal')
+        ax.set_aspect('auto')
 
         pc = self.plotCubeAt( self.positions, self.sizes, colors=self.colors, alpha=0.4, edgecolor="k")
         ax.add_collection3d(pc)    
@@ -211,10 +211,10 @@ class FigurePlot:
 
         fig = plt.figure()
         ax1 = fig.add_subplot( 1, 2, 1, projection='3d')
-        ax1.set_aspect('equal')
+        ax1.set_aspect('auto')
 
         ax2 = fig.add_subplot( 1, 2, 2)
-        ax2.set_aspect('equal')
+        ax2.set_aspect('auto')
 
 
         pc = self.plotCubeAt( self.positions, self.sizes, colors=self.colors, alpha=0.4, edgecolor="k")
