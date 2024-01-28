@@ -105,7 +105,7 @@ class Program():
         try:
             if not self.figure_loaded:
                 raise ValueError("Trying to display crosssection without a figure!")
-            fig = self.figure.plot_cross_section(point1, point2, point3, data=self.data, unit=self.data_unit)
+            fig = self.figure.plot_cross_section(point1, point2, point3, dist=self.data, unit=self.data_unit)
         except Exception as error:
             self.error_message("Crosssection couldn't be created for the reason below:\n"+str(error))   
         else:
