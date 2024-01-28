@@ -210,17 +210,17 @@ class Program():
         self.angle_entry = tk.Entry(self.cross_section_ui_frame)
         self.angle_entry.pack()
 
-        distance_label = tk.Label(self.cross_section_ui_frame, text="Distance of the intersection point from the axis:")
+        distance_label = tk.Label(self.cross_section_ui_frame, text="Distance of the intersection point from the axis:", wraplength=200)
         distance_label.pack()
         self.distance_entry = tk.Entry(self.cross_section_ui_frame)
         self.distance_entry.pack()
 
-        height_label = tk.Label(self.cross_section_ui_frame, text="Height of the intersection point:")
+        height_label = tk.Label(self.cross_section_ui_frame, text="Height of the intersection point:", wraplength=200)
         height_label.pack()
         self.height_entry = tk.Entry(self.cross_section_ui_frame)
         self.height_entry.pack()
 
-        confirm_button = tk.Button(self.cross_section_ui_frame, text="Potwierdź", command=self.confirm_cylindrical_cross_section)
+        confirm_button = tk.Button(self.cross_section_ui_frame, text="Confirm Cross Section", command=self.confirm_cylindrical_cross_section)
         confirm_button.pack()
 
     def confirm_cylindrical_cross_section(self):
