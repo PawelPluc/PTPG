@@ -18,7 +18,8 @@ class Program():
         self.figure_loaded = False
         self.figure = None
         self.data_loaded = False
-        self.data = None
+        self.data = []
+        self.data_unit = 'V'
         self.root = tk.Tk()
         self.root.title("Structure Analysis")
         self.cross_section_ui_frame = None
@@ -101,11 +102,10 @@ class Program():
         """
         Creates crosssection and plots it on the screen.
         """
-
         try:
             if not self.figure_loaded:
                 raise ValueError("Trying to display crosssection without a figure!")
-            fig = self.figure.plot_cross_section(point1, point2, point3)
+            fig = self.figure.plot_cross_section(point1, point2, point3, data=self.data, unit=self.data_unit)
         except Exception as error:
             self.error_message("Crosssection couldn't be created for the reason below:\n"+str(error))   
         else:
@@ -115,11 +115,19 @@ class Program():
         """
         Calls the necessary function to load distribution data
         """
-        self.data = Data_import()
-        if not self.data.load_data():
+        dist = Data_import()
+        if not dist.load_data():
             self.error_message("Distribution data failed to load.")
         else:
             self.data_loaded = True
+            self.data = dist.data
+
+            if dist.type == 'temperature':
+                self.data_unit = "K"
+            else:
+                self.dat_unit = "V"
+            
+
         
         print(self.data.data)   # Delete later, leave for now for testing
 
