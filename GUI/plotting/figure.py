@@ -132,7 +132,7 @@ class FigurePlot:
     def plot(self):
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
-        ax.set_aspect('equal')
+        ax.set_aspect('auto')
 
         if self.figure_import.laser_symmetry:
             cc = self.plotCircleAt(self.positions, self.sizes, colors=self.colors, alpha=0.4, edgecolor="k")
