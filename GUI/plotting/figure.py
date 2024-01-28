@@ -27,16 +27,19 @@ class FigurePlot:
 
         self.positions = [(i[1],0,i[2]) for i in self.coords]
         self.sizes = [( i[3] - i[1],self.length, i[4] - i[2]) for i in self.coords]
-        self.colors = ["y","b","r","purple","brown","pink"][:len(self.sizes)]
+        self.colors = ["y","b","r","purple","brown","pink"] * math.ceil(len(self.positions)/6)
+        self.colors = self.colors[:len(self.sizes)]
 
         self.coords_table = np.array( [(i+a, j+b, k+c) for (i,j,k), (a,b,c) in zip( self.sizes, self.positions)])
+        self.max_lim = self.coords_table.max(axis=0)
+
         if self.figure_import.laser_symmetry:
             self.min_lim = -self.coords_table.max(axis=0)
             self.min_lim[2] = 0
+            self.min_lim[1] = self.min_lim[0]
+            self.max_lim[1] = -self.min_lim[1]
         else:
             self.min_lim = np.array(self.positions).min(axis=0)
-
-        self.max_lim = self.coords_table.max(axis=0)
 
     def load_data(self):
         """
@@ -285,7 +288,7 @@ class FigurePlot:
         return np.arctan2(y, x)
     
 
-    def plot_cross_section(self, point1, point2, point3, dist=[], projection=0, limit=(0,10), flip_v=0, flip_h=0, rotate=0):
+    def plot_cross_section(self, point1, point2, point3, dist=[], unit="cm", projection=0, limit=(0,10), flip_v=0, flip_h=0, rotate=0):
 
         xx, yy, z, plane_point, normal, orientation = self.calculate_plane( point1=point1,
                                                                             point2=point2,
@@ -419,6 +422,11 @@ class FigurePlot:
             y_coordinates = dist[:,3]
             temperatures = dist[:,1]  # Replace this with your actual temperature data
 
+            if self.figure_import.laser_symmetry:
+                x_coordinates = np.concatenate([x_coordinates,-x_coordinates])
+                y_coordinates = np.concatenate([y_coordinates,y_coordinates])
+                temperatures = np.concatenate([temperatures,temperatures])
+
             # Create a regular grid
             x_grid, y_grid = np.meshgrid(np.linspace(min(x_coordinates), max(x_coordinates), 1000),
                                         np.linspace(min(y_coordinates), max(y_coordinates), 1000))
@@ -431,7 +439,7 @@ class FigurePlot:
 
             # Add colorbar for reference
             cbar = plt.colorbar()
-            cbar.set_label('Temperature [K]')
+            cbar.set_label(f'[{unit}]')
 
         # plt.show()
         return fig
