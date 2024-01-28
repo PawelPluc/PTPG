@@ -220,7 +220,7 @@ class Program():
         self.height_entry = tk.Entry(self.cross_section_ui_frame)
         self.height_entry.pack()
 
-        confirm_button = tk.Button(self.cross_section_ui_frame, text="Potwierdź", command=self.confirm_cylindrical_cross_section)
+        confirm_button = tk.Button(self.cross_section_ui_frame, text="Confirm Cross Section", command=self.confirm_cylindrical_cross_section)
         confirm_button.pack()
 
     def confirm_cylindrical_cross_section(self):
