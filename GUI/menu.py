@@ -353,18 +353,12 @@ class Program():
         # Check if the cross product is zero (collinear points)
         return all(coord == 0 for coord in cross_product)
 
-    def cylindrical_to_cartesian(self, r, theta, z):
-        # Convert degrees to radians for trigonometric functions
-        theta_rad = math.radians(theta)
-        x = r * math.cos(theta_rad)
-        y = r * math.sin(theta_rad)
-        return x, y, z
-
-    def get_cross_section_points(self, r, theta, z, delta=5):
+    def get_cross_section_points(self, r, theta, z, delta=2):
         # Three points at theta, theta + delta, and theta - delta
-        point1 = self.cylindrical_to_cartesian(r, theta, z)
-        point2 = self.cylindrical_to_cartesian(r, theta + delta, z)
-        point3 = self.cylindrical_to_cartesian(r, theta - delta, z)
+        theta = math.radians(theta)
+        point1 = (r, 0, z)
+        point2 = (r, r, z)
+        point3 = (r + delta*math.cos(theta), 0, z - delta*math.sin(theta))
         return point1, point2, point3
 
     def terminate_program(self):
