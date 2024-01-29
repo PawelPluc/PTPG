@@ -20,14 +20,10 @@ class Figure_import():
             print("File selection cancelled.")
             return False
  
-        try:
-            self.process_file(file_path)
-            print("Data loaded successfully.")
-            return True
-        except ValueError as e:
-            print(f"Error loading data: {e}")
-            return False
- 
+        self.process_file(file_path)
+        print("Data loaded successfully.")
+        return True
+        
     def process_file(self, file_path):
         """
         Loads the data about the figure checking if the input is correct and saves it to self.data.
