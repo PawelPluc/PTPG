@@ -137,7 +137,7 @@ class Program():
             if dist.type == 'temperature':
                 self.data_unit = "K"
             else:
-                self.dat_unit = "V"
+                self.data_unit = "V"
             self.reload_cross_section_with_distribution()
             
     def reload_cross_section_with_distribution(self):
