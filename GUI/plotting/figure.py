@@ -421,7 +421,7 @@ class FigurePlot:
                 xf = [p[0] for p in pf]
                 yf = [p[1] for p in pf]
 
-                ax2.plot( xf, yf, color="#FFFFFF", lw=4)
+                ax2.plot( xf, yf, color="#000000", lw=4)
                 ax2.plot( xf, yf, color=c)
         
         if len(dist):
@@ -443,7 +443,7 @@ class FigurePlot:
             temperature_grid = griddata((x_coordinates, y_coordinates), temperatures, (x_grid, y_grid), method='linear')
 
             # Create a heatmap using pcolormesh
-            plt.pcolormesh(x_grid, y_grid, temperature_grid, cmap='hot', shading='auto')
+            plt.pcolormesh(x_grid, y_grid, temperature_grid, shading='auto')
 
             # Add colorbar for reference
             cbar = plt.colorbar()
